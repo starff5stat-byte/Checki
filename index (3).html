@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Multi-Tool App</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  :root {
+    --bg1: #1e1e2f;
+    --bg2: #2a2a40;
+    --card: #34344a;
+    --text: #ffffff;
+    --accent: #ff6b6b;
+    --accent2: #4ecdc4;
+    --accent3: #ffe66d;
+    --accent4: #a06cd5;
+    --shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  body.light {
+    --bg1: #f0f2f5;
+    --bg2: #ffffff;
+    --card: #ffffff;
+    --text: #222;
+    --shadow: 0 6px 18px rgba(0,0,0,0.1);
+  }
+  body {
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    color: var(--text);
+    min-height: 100vh;
+    padding: 15px;
+    transition: all 0.4s;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  header h1 {
+    font-size: 20px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .theme-btn {    background: var(--accent3);
+    color: #222;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); }
+  .card h2 {
+    font-size: 17px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .display {
+    font-size: 34px;
+    font-weight: bold;
+    text-align: center;
+    padding: 14px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-break: break-all;
+  }
+  body.light .display { background: rgba(0,0,0,0.05); }
+  .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  button.action {    flex: 1;
+    min-width: 70px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+    transition: transform 0.1s, box-shadow 0.2s;
+  }
+  button.action:active { transform: scale(0.94); }
+  .btn-red { background: var(--accent); }
+  .btn-teal { background: var(--accent2); color: #222; }
+  .btn-yellow { background: var(--accent3); color: #222; }
+  .btn-purple { background: var(--accent4); }
+  .btn-blue { background: #4d9de0; }
+  .btn-green { background: #6bcb77; }
+  .btn-orange { background: #ff9f45; }
+  .btn-pink { background: #ff6b9d; }
+  .color-box {
+    height: 80px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    border: 2px dashed rgba(255,255,255,0.3);
+  }
+  .emoji-big { font-size: 60px; text-align: center; }
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(0,0,0,0.2);
+    color: var(--text);
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+  body.light input { background: rgba(0,0,0,0.06); }
+  .todo-list {
+    max-height: 180px;
+    overflow-y: auto;
+    margin-top: 8px;
+  }
+  .todo-item {    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  body.light .todo-item { background: rgba(0,0,0,0.05); }
+  .todo-item.done { text-decoration: line-through; opacity: 0.6; }
+  .todo-item button {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 4px;
+  }
+  .progress-bar {
+    height: 12px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  body.light .progress-bar { background: rgba(0,0,0,0.08); }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent3));
+    width: 0%;
+    transition: width 0.3s;
+  }
+  .quote-box {
+    font-style: italic;
+    text-align: center;
+    padding: 12px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .small-label {
+    font-size: 12px;
+    opacity: 0.7;
+    text-align: center;
+    margin-top: 6px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 12px;    opacity: 0.6;
+    font-size: 13px;
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .pop { animation: pop 0.3s; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚀 Multi-Tool App</h1>
+  <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
+</header>
+
+<div class="grid">
+
+  <!-- 1. Counter 1 -->
+  <div class="card">
+    <h2>🔢 Counter 1</h2>
+    <div class="display" id="c1">0</div>
+    <div class="btn-row">
+      <button class="action btn-red" onclick="change('c1',-1)">-1</button>
+      <button class="action btn-teal" onclick="change('c1',1)">+1</button>
+      <button class="action btn-yellow" onclick="change('c1',10)">+10</button>
+      <button class="action btn-purple" onclick="reset('c1')">Reset</button>
+    </div>
+  </div>
+
+  <!-- 2. Counter 2 -->
+  <div class="card">
+    <h2>🎯 Counter 2</h2>
+    <div class="display" id="c2">0</div>
+    <div class="btn-row">
+      <button class="action btn-green" onclick="change('c2',-5)">-5</button>
+      <button class="action btn-orange" onclick="change('c2',5)">+5</button>
+      <button class="action btn-pink" onclick="change('c2',100)">+100</button>
+      <button class="action btn-blue" onclick="reset('c2')">Reset</button>
+    </div>
+  </div>
+
+  <!-- 3. Dice Roller -->
+  <div class="card">
+    <h2>🎲 Dice Roller</h2>
+    <div class="emoji-big" id="dice">🎲</div>
+    <div class="display" id="diceNum">-</div>
+    <div class="btn-row">      <button class="action btn-red" onclick="rollDice()">🎲 Roll</button>
+      <button class="action btn-teal" onclick="roll2Dice()">🎲🎲 x2</button>
+    </div>
+    <div class="small-label">Total rolls: <span id="diceCount">0</span></div>
+  </div>
+
+  <!-- 4. Coin Flip -->
+  <div class="card">
+    <h2>🪙 Coin Flip</h2>
+    <div class="emoji-big" id="coin">🪙</div>
+    <div class="display" id="coinResult">Tap to flip</div>
+    <div class="btn-row">
+      <button class="action btn-yellow" onclick="flipCoin()">Flip!</button>
+      <button class="action btn-purple" onclick="resetCoin()">Reset</button>
+    </div>
+    <div class="small-label">Heads: <span id="heads">0</span> | Tails: <span id="tails">0</span></div>
+  </div>
+
+  <!-- 5. Click Speed Test -->
+  <div class="card">
+    <h2>⚡ Click Speed Test (10s)</h2>
+    <div class="display" id="cps">0</div>
+    <div class="btn-row">
+      <button class="action btn-orange" id="cpsBtn" onclick="cpsClick()" style="padding:16px;">TAP ME!</button>
+    </div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="action btn-blue" onclick="resetCPS()">Reset</button>
+    </div>
+    <div class="small-label">Best: <span id="cpsBest">0</span> cps</div>
+  </div>
+
+  <!-- 6. Random Color -->
+  <div class="card">
+    <h2>🎨 Random Color</h2>
+    <div class="color-box" id="colorBox" style="background:#ff6b6b;">#FF6B6B</div>
+    <div class="btn-row">
+      <button class="action btn-pink" onclick="randomColor()">🎨 New Color</button>
+      <button class="action btn-teal" onclick="copyColor()">📋 Copy</button>
+    </div>
+  </div>
+
+  <!-- 7. Stopwatch -->
+  <div class="card">
+    <h2>⏱️ Stopwatch</h2>
+    <div class="display" id="stopwatch">00:00:00</div>
+    <div class="btn-row">
+      <button class="action btn-green" id="swStart" onclick="startSW()">Start</button>
+      <button class="action btn-red" onclick="stopSW()">Stop</button>
+      <button class="action btn-yellow" onclick="resetSW()">Reset</button>
+    </div>  </div>
+
+  <!-- 8. Timer -->
+  <div class="card">
+    <h2>⏰ Countdown Timer</h2>
+    <input type="number" id="timerInput" placeholder="Seconds" value="30" />
+    <div class="display" id="timer">00:30</div>
+    <div class="btn-row">
+      <button class="action btn-blue" onclick="startTimer()">Start</button>
+      <button class="action btn-red" onclick="stopTimer()">Stop</button>
+      <button class="action btn-yellow" onclick="resetTimer()">Reset</button>
+    </div>
+  </div>
+
+  <!-- 9. Score Keeper -->
+  <div class="card">
+    <h2>🏆 Score Keeper</h2>
+    <div style="display:flex; justify-content:space-around; text-align:center;">
+      <div>
+        <div style="font-size:14px;">Player A</div>
+        <div class="display" id="scoreA" style="font-size:26px;">0</div>
+        <div class="btn-row">
+          <button class="action btn-red" onclick="score('scoreA',-1)">-</button>
+          <button class="action btn-green" onclick="score('scoreA',1)">+</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:14px;">Player B</div>
+        <div class="display" id="scoreB" style="font-size:26px;">0</div>
+        <div class="btn-row">
+          <button class="action btn-red" onclick="score('scoreB',-1)">-</button>
+          <button class="action btn-green" onclick="score('scoreB',1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="action btn-purple" onclick="resetScores()">Reset All</button>
+    </div>
+  </div>
+
+  <!-- 10. Random Quote -->
+  <div class="card">
+    <h2>💬 Random Quote</h2>
+    <div class="quote-box" id="quote">"Life is what happens when you're busy making other plans." — John Lennon</div>
+    <div class="btn-row">
+      <button class="action btn-teal" onclick="newQuote()">✨ New Quote</button>
+    </div>
+  </div>
+
+  <!-- 11. Todo List -->  <div class="card">
+    <h2>📝 Quick Todo</h2>
+    <input type="text" id="todoInput" placeholder="Add task..." onkeydown="if(event.key==='Enter')addTodo()" />
+    <div class="btn-row">
+      <button class="action btn-green" onclick="addTodo()">➕ Add</button>
+      <button class="action btn-red" onclick="clearTodos()">🗑️ Clear</button>
+    </div>
+    <div class="todo-list" id="todoList"></div>
+  </div>
+
+  <!-- 12. Progress / Goal -->
+  <div class="card">
+    <h2>🎯 Daily Goal</h2>
+    <div class="display" id="goalText">0 / 10</div>
+    <div class="progress-bar"><div class="progress-fill" id="goalBar"></div></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="action btn-green" onclick="goalStep(1)">+1</button>
+      <button class="action btn-orange" onclick="goalStep(5)">+5</button>
+      <button class="action btn-red" onclick="goalStep(-1)">-1</button>
+      <button class="action btn-purple" onclick="resetGoal()">Reset</button>
+    </div>
+  </div>
+
+  <!-- 13. Random Number -->
+  <div class="card">
+    <h2>🔢 Random Number</h2>
+    <div style="display:flex; gap:6px;">
+      <input type="number" id="minN" placeholder="Min" value="1" />
+      <input type="number" id="maxN" placeholder="Max" value="100" />
+    </div>
+    <div class="display" id="randNum">?</div>
+    <div class="btn-row">
+      <button class="action btn-blue" onclick="randNumber()">🎲 Generate</button>
+    </div>
+  </div>
+
+  <!-- 14. Emoji Slot Machine -->
+  <div class="card">
+    <h2>🎰 Emoji Slot</h2>
+    <div class="display" id="slot" style="font-size:40px;">🍒 🍋 🍇</div>
+    <div class="btn-row">
+      <button class="action btn-pink" onclick="spinSlot()">🎰 SPIN</button>
+    </div>
+    <div class="small-label">Wins: <span id="slotWins">0</span></div>
+  </div>
+
+  <!-- 15. Mood Selector -->
+  <div class="card">
+    <h2>😊 How are you?</h2>
+    <div class="display" id="mood">Tap an emoji</div>    <div class="btn-row">
+      <button class="action btn-green" onclick="setMood('😄 Happy')">😄</button>
+      <button class="action btn-blue" onclick="setMood('😐 Meh')">😐</button>
+      <button class="action btn-purple" onclick="setMood('😢 Sad')">😢</button>
+      <button class="action btn-red" onclick="setMood('😡 Angry')">😡</button>
+      <button class="action btn-yellow" onclick="setMood('🤩 Excited')">🤩</button>
+    </div>
+  </div>
+
+  <!-- 16. Quick Notes -->
+  <div class="card">
+    <h2>📓 Quick Note</h2>
+    <textarea id="noteArea" style="width:100%; min-height:100px; padding:10px; border-radius:10px; border:none; background:rgba(0,0,0,0.2); color:var(--text); font-size:14px;" placeholder="Type something..."></textarea>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="action btn-teal" onclick="saveNote()">💾 Save</button>
+      <button class="action btn-red" onclick="clearNote()">🗑️ Clear</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>Made with ❤️ | Multi-Tool App v1.0</footer>
+
+<script>
+  // ---------- Theme ----------
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    vibrate();
+  }
+  if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+
+  // ---------- Vibration ----------
+  function vibrate(ms=20) { if (navigator.vibrate) navigator.vibrate(ms); }
+
+  // ---------- Pop animation ----------
+  function pop(id) {
+    const el = document.getElementById(id);
+    el.classList.remove('pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+  }
+
+  // ---------- Counters ----------
+  function change(id, n) {
+    const el = document.getElementById(id);
+    el.textContent = parseInt(el.textContent || 0) + n;
+    pop(id); vibrate();
+    localStorage.setItem(id, el.textContent);
+  }  function reset(id) {
+    document.getElementById(id).textContent = 0;
+    pop(id); vibrate();
+    localStorage.setItem(id, 0);
+  }
+  ['c1','c2'].forEach(id => {
+    const v = localStorage.getItem(id);
+    if (v !== null) document.getElementById(id).textContent = v;
+  });
+
+  // ---------- Dice ----------
+  let diceCount = parseInt(localStorage.getItem('diceCount') || 0);
+  document.getElementById('diceCount').textContent = diceCount;
+  const diceEmoji = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  function rollDice() {
+    const n = Math.floor(Math.random()*6)+1;
+    document.getElementById('dice').textContent = diceEmoji[n-1];
+    document.getElementById('diceNum').textContent = n;
+    diceCount++; 
+    document.getElementById('diceCount').textContent = diceCount;
+    localStorage.setItem('diceCount', diceCount);
+    pop('diceNum'); vibrate();
+  }
+  function roll2Dice() {
+    const a = Math.floor(Math.random()*6)+1;
+    const b = Math.floor(Math.random()*6)+1;
+    document.getElementById('dice').textContent = diceEmoji[a-1] + ' ' + diceEmoji[b-1];
+    document.getElementById('diceNum').textContent = a + ' + ' + b + ' = ' + (a+b);
+    diceCount++;
+    document.getElementById('diceCount').textContent = diceCount;
+    localStorage.setItem('diceCount', diceCount);
+    pop('diceNum'); vibrate();
+  }
+
+  // ---------- Coin ----------
+  let heads = parseInt(localStorage.getItem('heads') || 0);
+  let tails = parseInt(localStorage.getItem('tails') || 0);
+  document.getElementById('heads').textContent = heads;
+  document.getElementById('tails').textContent = tails;
+  function flipCoin() {
+    const r = Math.random() < 0.5;
+    document.getElementById('coin').textContent = r ? '👑' : '🌿';
+    document.getElementById('coinResult').textContent = r ? 'HEADS' : 'TAILS';
+    if (r) heads++; else tails++;
+    document.getElementById('heads').textContent = heads;
+    document.getElementById('tails').textContent = tails;
+    localStorage.setItem('heads', heads);
+    localStorage.setItem('tails', tails);
+    pop('coinResult'); vibrate();
+  }  function resetCoin() {
+    heads = 0; tails = 0;
+    document.getElementById('heads').textContent = 0;
+    document.getElementById('tails').textContent = 0;
+    document.getElementById('coinResult').textContent = 'Tap to flip';
+    document.getElementById('coin').textContent = '🪙';
+    localStorage.setItem('heads', 0);
+    localStorage.setItem('tails', 0);
+  }
+
+  // ---------- CPS ----------
+  let cpsCount = 0, cpsTimer = null, cpsStarted = false, cpsBest = parseInt(localStorage.getItem('cpsBest') || 0);
+  document.getElementById('cpsBest').textContent = cpsBest;
+  function cpsClick() {
+    if (!cpsStarted) {
+      cpsStarted = true;
+      cpsCount = 0;
+      cpsTimer = setInterval(() => {
+        cpsCount--;
+        document.getElementById('cps').textContent = cpsCount;
+        if (cpsCount <= 0) {
+          clearInterval(cpsTimer);
+          cpsStarted = false;
+          const cps = parseInt(document.getElementById('cps').dataset.clicks || 0);
+          if (cps > cpsBest) {
+            cpsBest = cps;
+            localStorage.setItem('cpsBest', cpsBest);
+            document.getElementById('cpsBest').textContent = cpsBest;
+          }
+        }
+      }, 1000);
+      let t = 10;
+      document.getElementById('cps').textContent = t;
+      const clickTimer = setInterval(() => {
+        t--;
+        document.getElementById('cps').textContent = t;
+        if (t <= 0) clearInterval(clickTimer);
+      }, 1000);
+    }
+    const cur = parseInt(document.getElementById('cps').dataset.clicks || 0) + 1;
+    document.getElementById('cps').dataset.clicks = cur;
+    pop('cps'); vibrate(10);
+  }
+  function resetCPS() {
+    clearInterval(cpsTimer);
+    cpsStarted = false;
+    document.getElementById('cps').textContent = 0;
+    document.getElementById('cps').dataset.clicks = 0;
+  }
+  // ---------- Random Color ----------
+  function randomColor() {
+    const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0').toUpperCase();
+    const box = document.getElementById('colorBox');
+    box.style.background = hex;
+    box.textContent = hex;
+    pop('colorBox'); vibrate();
+  }
+  function copyColor() {
+    const c = document.getElementById('colorBox').textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(c);
+    alert('Copied: ' + c);
+  }
+
+  // ---------- Stopwatch ----------
+  let swInt = null, swSec = 0;
+  function fmtSW(s) {
+    const h = String(Math.floor(s/3600)).padStart(2,'0');
+    const m = String(Math.floor((s%3600)/60)).padStart(2,'0');
+    const sec = String(s%60).padStart(2,'0');
+    return `${h}:${m}:${sec}`;
+  }
+  function startSW() {
+    if (swInt) return;
+    swInt = setInterval(() => {
+      swSec++;
+      document.getElementById('stopwatch').textContent = fmtSW(swSec);
+    }, 1000);
+  }
+  function stopSW() { clearInterval(swInt); swInt = null; }
+  function resetSW() { stopSW(); swSec = 0; document.getElementById('stopwatch').textContent = '00:00:00'; }
+
+  // ---------- Timer ----------
+  let tmInt = null, tmSec = 30;
+  function fmtTM(s) {
+    const m = String(Math.floor(s/60)).padStart(2,'0');
+    const sec = String(s%60).padStart(2,'0');
+    return `${m}:${sec}`;
+  }
+  function startTimer() {
+    if (tmInt) return;
+    const inp = parseInt(document.getElementById('timerInput').value);
+    if (!isNaN(inp) && tmSec === 0) tmSec = inp;
+    tmInt = setInterval(() => {
+      tmSec--;
+      document.getElementById('timer').textContent = fmtTM(tmSec);
+      if (tmSec <= 0) {
+        clearInterval(tmInt); tmInt = null;
+        alert('⏰ Time up!');
+        if (navigator.vibrate) navigator.vibrate([200,100,200,100,200]);      }
+    }, 1000);
+  }
+  function stopTimer() { clearInterval(tmInt); tmInt = null; }
+  function resetTimer() {
+    stopTimer();
+    tmSec = parseInt(document.getElementById('timerInput').value) || 30;
+    document.getElementById('timer').textContent = fmtTM(tmSec);
+  }
+
+  // ---------- Scores ----------
+  function score(id, n) {
+    const el = document.getElementById(id);
+    el.textContent = parseInt(el.textContent || 0) + n;
+    pop(id); vibrate();
+  }
+  function resetScores() {
+    document.getElementById('scoreA').textContent = 0;
+    document.getElementById('scoreB').textContent = 0;
+  }
+
+  // ---------- Quotes ----------
+  const quotes = [
+    '"Life is what happens when you\'re busy making other plans." — John Lennon',
+    '"The only way to do great work is to love what you do." — Steve Jobs',
+    '"In the middle of every difficulty lies opportunity." — Einstein',
+    '"Believe you can and you\'re halfway there." — Theodore Roosevelt',
+    '"Dream big. Start small. Act now." — Robin Sharma',
+    '"Your limitation—it\'s only your imagination."',
+    '"Push yourself, because no one else is going to do it for you."',
+    '"Success is the sum of small efforts repeated day in and day out."',
+    '"Don\'t watch the clock; do what it does. Keep going."',
+    '"Hard times don\'t last, but hard people do."'
+  ];
+  function newQuote() {
+    const q = quotes[Math.floor(Math.random()*quotes.length)];
+    document.getElementById('quote').textContent = q;
+    pop('quote'); vibrate();
+  }
+
+  // ---------- Todo ----------
+  let todos = JSON.parse(localStorage.getItem('todos') || '[]');
+  function renderTodos() {
+    const list = document.getElementById('todoList');
+    list.innerHTML = '';
+    todos.forEach((t, i) => {
+      const d = document.createElement('div');
+      d.className = 'todo-item' + (t.done ? ' done' : '');
+      d.innerHTML = `<span onclick="toggleTodo(${i})">${t.text}</span>
+        <div>          <button onclick="toggleTodo(${i})">✓</button>
+          <button onclick="delTodo(${i})">×</button>
+        </div>`;
+      list.appendChild(d);
+    });
+  }
+  function addTodo() {
+    const inp = document.getElementById('todoInput');
+    if (inp.value.trim()) {
+      todos.push({text: inp.value.trim(), done: false});
+      inp.value = '';
+      saveTodos(); renderTodos(); vibrate();
+    }
+  }
+  function toggleTodo(i) { todos[i].done = !todos[i].done; saveTodos(); renderTodos(); }
+  function delTodo(i) { todos.splice(i,1); saveTodos(); renderTodos(); }
+  function clearTodos() { todos = []; saveTodos(); renderTodos(); }
+  function saveTodos() { localStorage.setItem('todos', JSON.stringify(todos)); }
+  renderTodos();
+
+  // ---------- Goal ----------
+  let goal = parseInt(localStorage.getItem('goal') || 0);
+  const GOAL_MAX = 10;
+  function renderGoal() {
+    document.getElementById('goalText').textContent = `${goal} / ${GOAL_MAX}`;
+    document.getElementById('goalBar').style.width = Math.min(100, (goal/GOAL_MAX)*100) + '%';
+    if (goal >= GOAL_MAX) document.getElementById('goalText').textContent = '🎉 GOAL DONE!';
+  }
+  function goalStep(n) {
+    goal = Math.max(0, goal + n);
+    localStorage.setItem('goal', goal);
+    renderGoal(); pop('goalText'); vibrate();
+    if (goal >= GOAL_MAX) alert('🎉 Congratulations! Goal achieved!');
+  }
+  function resetGoal() { goal = 0; localStorage.setItem('goal', 0); renderGoal(); }
+  renderGoal();
+
+  // ---------- Random Number ----------
+  function randNumber() {
+    const a = parseInt(document.getElementById('minN').value);
+    const b = parseInt(document.getElementById('maxN').value);
+    if (isNaN(a) || isNaN(b) || a > b) {
+      document.getElementById('randNum').textContent = 'Error';
+      return;
+    }
+    const n = Math.floor(Math.random()*(b-a+1)) + a;
+    document.getElementById('randNum').textContent = n;
+    pop('randNum'); vibrate();
+  }
+  // ---------- Slot Machine ----------
+  const slotEmojis = ['🍒','🍋','🍇','🔔','⭐','💎','7️⃣'];
+  let slotWins = parseInt(localStorage.getItem('slotWins') || 0);
+  document.getElementById('slotWins').textContent = slotWins;
+  function spinSlot() {
+    const s1 = slotEmojis[Math.floor(Math.random()*slotEmojis.length)];
+    const s2 = slotEmojis[Math.floor(Math.random()*slotEmojis.length)];
+    const s3 = slotEmojis[Math.floor(Math.random()*slotEmojis.length)];
+    document.getElementById('slot').textContent = `${s1} ${s2} ${s3}`;
+    if (s1 === s2 && s2 === s3) {
+      slotWins++;
+      document.getElementById('slotWins').textContent = slotWins;
+      localStorage.setItem('slotWins', slotWins);
+      alert('🎉 JACKPOT! ' + s1 + s2 + s3);
+      if (navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+    } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+      alert('😎 Two match! Try again!');
+      vibrate(50);
+    }
+    pop('slot');
+  }
+
+  // ---------- Mood ----------
+  function setMood(m) {
+    document.getElementById('mood').textContent = m;
+    pop('mood'); vibrate();
+    localStorage.setItem('mood', m);
+  }
+  const savedMood = localStorage.getItem('mood');
+  if (savedMood) document.getElementById('mood').textContent = savedMood;
+
+  // ---------- Notes ----------
+  document.getElementById('noteArea').value = localStorage.getItem('note') || '';
+  function saveNote() {
+    localStorage.setItem('note', document.getElementById('noteArea').value);
+    alert('✅ Note saved!');
+    vibrate();
+  }
+  function clearNote() {
+    document.getElementById('noteArea').value = '';
+    localStorage.removeItem('note');
+  }
+</script>
+</body>
+</html>
